@@ -1,4 +1,6 @@
+"use client";
 import Image from "next/image";
+import ChatbotWidget from "@/components/ChatbotWidget"; 
 
 export default function Home() {
   return (
@@ -98,6 +100,7 @@ export default function Home() {
           Go to nextjs.org →
         </a>
       </footer>
+      <ChatbotWidget title="AI Chatbot" position="bottom-right" />
     </div>
   );
 }
