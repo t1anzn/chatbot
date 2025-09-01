@@ -29,7 +29,7 @@ export default function ChatbotWidget({
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
-  }, [messages, open]);
+  }, [messages]);
 
   console.log("Chat panel open:", open);
 
@@ -75,8 +75,8 @@ export default function ChatbotWidget({
       {/* Chat panel */}
       <div
         className={[
-          open ? "flex z-[1000]" : "hidden",
-          "flex-col w-[360px] max-w-[90vw] h-[520px] max-h-[70vh]",
+          open ? "flex flex-col z-[1000]" : "hidden",
+          "w-[360px] max-w-[90vw] h-[520px] max-h-[70vh] min-h-0",
           "bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden",
         ].join(" ")}
       >
@@ -112,9 +112,12 @@ export default function ChatbotWidget({
           </button>
         </div>
         {/* Body */}
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 min-h-0">
           {/* Message list (scrollable area) */}
-          <div className="flex-1 bg-slate-50 p-3 overflow-y-auto" ref={listRef}>
+          <div
+            className="flex-1 min-h-0 bg-slate-50 p-3 overflow-y-auto"
+            ref={listRef}
+          >
             {messages.length === 0 ? (
               <div className="pl-2 pt-2 text-slate-400 text-sm">
                 Let's chat!
