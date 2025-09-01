@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import axios from "axios";
+import { fetchGeminiReply } from "../utils/geminiApi";
 
-type Role = "user" | "assistant";
+type Role = "user" | "model";
 
 export interface Message {
   id: string;
@@ -164,7 +166,7 @@ export default function ChatbotWidget({
           {/* Input bar */}
           <div className="p-3 border-t border-slate-200 bg-white">
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 if (!input.trim() || isReplying) return;
                 const userText = input;
@@ -178,16 +180,21 @@ export default function ChatbotWidget({
                 setInput("");
                 setIsReplying(true);
 
-                setTimeout(() => {
-                  const aiMessage: Message = {
+                const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string;
+                const aiText = await fetchGeminiReply(
+                  [...messages, newMessage],
+                  apiKey
+                );
+                setMessages((prev) => [
+                  ...prev,
+                  {
                     id: Math.random().toString(36).slice(2),
-                    role: "assistant",
-                    content: `Echo: ${input}`,
+                    role: "model",
+                    content: aiText,
                     timestamp: Date.now(),
-                  };
-                  setMessages((prev) => [...prev, aiMessage]);
-                  setIsReplying(false);
-                }, 4000);
+                  },
+                ]);
+                setIsReplying(false);
               }}
               className="flex gap-2"
             >
