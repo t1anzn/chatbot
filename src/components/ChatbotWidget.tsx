@@ -23,13 +23,14 @@ export default function ChatbotWidget({
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [isReplying, setIsReplying] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isReplying]);
 
   console.log("Chat panel open:", open);
 
@@ -142,21 +143,40 @@ export default function ChatbotWidget({
                 </div>
               ))
             )}
+
+            {/* Typing indicator */}
+            {isReplying && (
+              <div
+                className="mb-2 flex justify-start"
+                role="status"
+                aria-live="polite"
+              >
+                <div className="px-3 py-3 bg-slate-200 rounded-lg">
+                  <span className="inline-flex items-center gap-1">
+                    <span className="h-2 w-2 bg-slate-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <span className="h-2 w-2 bg-slate-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <span className="h-2 w-2 bg-slate-500 rounded-full animate-bounce" />
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
           {/* Input bar */}
           <div className="p-3 border-t border-slate-200 bg-white">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (!input.trim()) return;
+                if (!input.trim() || isReplying) return;
+                const userText = input;
                 const newMessage: Message = {
                   id: Math.random().toString(36).slice(2),
                   role: "user",
                   content: input,
                   timestamp: Date.now(),
                 };
-                setMessages([...messages, newMessage]);
+                setMessages((prev) => [...prev, newMessage]);
                 setInput("");
+                setIsReplying(true);
 
                 setTimeout(() => {
                   const aiMessage: Message = {
@@ -166,7 +186,8 @@ export default function ChatbotWidget({
                     timestamp: Date.now(),
                   };
                   setMessages((prev) => [...prev, aiMessage]);
-                }, 1000);
+                  setIsReplying(false);
+                }, 4000);
               }}
               className="flex gap-2"
             >
@@ -176,10 +197,12 @@ export default function ChatbotWidget({
                 placeholder="Type a message..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                disabled={isReplying}
               />
               <button
                 type="submit"
                 className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-500"
+                disabled={!input.trim() || isReplying}
               >
                 Send
               </button>
