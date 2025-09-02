@@ -180,11 +180,10 @@ export default function ChatbotWidget({
                 setInput("");
                 setIsReplying(true);
 
-                const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string;
-                const aiText = await fetchGeminiReply(
-                  [...messages, newMessage],
-                  apiKey
-                );
+                const aiText = await fetchGeminiReply([
+                  ...messages,
+                  newMessage,
+                ]);
                 setMessages((prev) => [
                   ...prev,
                   {
